@@ -1,0 +1,11 @@
+var emergency = {
+"type": "FeatureCollection",
+"name": "emergency",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "OBJECTID": 1, "name": "Samariterbund Salzburg", "healthcare": "ambulance", "opening_ho": "24/7" }, "geometry": { "type": "Point", "coordinates": [ 13.010194999999328, 47.802713699677554 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 2, "name": "Zahnärztliches Notdienstzentrum", "healthcare": "health care", "opening_ho": "PH 15:00-17:00" }, "geometry": { "type": "Point", "coordinates": [ 13.051485199882109, 47.804764699831082 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 3, "name": "Hausarzt Notdienst Zentrum", "healthcare": "emergency care", "opening_ho": "Mo-Fr 19:00-23:00; Sa,Su,PH 08:00-13:00,16:00-23:00" }, "geometry": { "type": "Point", "coordinates": [ 13.057781500116164, 47.808676300171157 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 4, "name": "PMU LKH Gynäkologie Geburtshilfe", "healthcare": "hospital", "opening_ho": "24/7" }, "geometry": { "type": "Point", "coordinates": [ 13.032578700346789, 47.80625980024962 ] } }
+]
+}

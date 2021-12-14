@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<!--Title of  the web map application -->
+        <title>Leaflet Map Application</title>
+		<!--Specify the css files path of the leaflet libraries and plugins used in the web map application -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="dist/leaflet.zoomhome.css"/>
+		<link rel="shortcut icon" type="image/jpg" href="images/map.png"/>
+		<link rel="stylesheet" href="dist/MarkerCluster.css" />
+		<link rel="stylesheet" href="dist/MarkerCluster.Default.css" />
+		<link rel="stylesheet" href="dist/leaflet.legend.css" />
+        
+		<!-- Style tag is used to define the style for the html body, h1 tag and map div container -->
+		<style> 
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: "whitesmoke";
+                font-family: "Noto Sans", sans-serif;
+                color: #3d3d3d;
+            }
+            h1 {
+                position: fixed;
+                margin-top: 0;
+                top: 10px;
+                left: 55px;
+                font-size: 2em;
+                font-family: "Lora", serif;
+                letter-spacing: .04em;
+                padding: 10px 15px;
+                background-color: rgba(214, 206, 206, 0.5);
+                border: 1px solid grey;
+                border-radius: 3px;
+                z-index: 800;
+			}
+            #map {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 100%;
+            }
+        </style>
+		<!--Specify the Javascript files path of the leaflet libraries and plugins used in the web map application -->
+        <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script src="dist/leaflet.zoomhome.min.js"></script>
+		<script src="dist/leaflet.markercluster-src.js"></script>
+		<script type="text/javascript" src="dist/leaflet.legend.js"></script>
+		<!--Specify the path of the geojson files used in the web map application -->
+		<script src="data/doctor.geojson"></script>
+		<script src="data/pharmacy.geojson"></script>
+		<script src="data/emergency.geojson"></script>
+    </head>
+    <body>
+		<h1> Salzburg Health Services </h1> <!-- Map title is set using an h1 tag-->
+        <div id="map"></div> <!-- Div container is set to hold the map and it's elements-->
+
+        <script>
+			var map; // map variable is declared but not assigned a value yet.
+
+			// Style for the  doctor Geojson data 
+			var myIcondoctor = L.icon({
+			iconUrl: 'images/doctor.png',
+			iconSize: [30, 30]
+			});
+			
+			// geojson point feature is created from the doctor geojson data
+			var doctor = L.geoJson(doctor, {
+				pointToLayer: function(feature, latlng) {
+				return  L.marker(latlng, {icon:myIcondoctor, title: "Doctor"});
+			},
+			onEachFeature: function(feature, marker) { // Creating popups and which properties to display in popups
+				marker.bindPopup("<b>Name:</b> " +feature.properties.name +  "<br>" + "<b>Expertise: </b> "  + feature.properties.healthcare + "<br>" +
+				" <b>Opening hours: </b> " + feature.properties.opening_ho );
+			}
+
+			});
+			/* Cluster variable is created and cluster method is assigned to it
+			the doctor dataset is passed to the clusters variable */
+			var clusters = L.markerClusterGroup();
+			clusters.addLayer(doctor);
+
+
+			// Style for the  pharmacy Geojson data 
+			var myIconpharm = L.icon({
+			iconUrl: 'images/pharmacy.png',
+			iconSize: [20, 20]
+			});
+			
+			// geojson point feature is created from the pharmacy geojson data
+			var pharmacy = L.geoJson(pharmacy, {
+				pointToLayer: function(feature, latlng) {
+				return  L.marker(latlng, {icon:myIconpharm, title: "Pharmacy"});
+			},
+			onEachFeature: function(feature, marker) { // Creating popups and which properties to display in popups
+				marker.bindPopup("<b>Name:</b> " +feature.properties.name +  "<br>" + " <b>Opening hours: </b> " + feature.properties.opening_ho );
+	
+			}
+			});
+
+			// Style for the  emergency facilities Geojson data
+			var myIconEmerg = L.icon({
+			iconUrl: 'images/emergency.png',
+			iconSize: [25, 25]
+			});
+			
+			// geojson point feature is created from the emergency facilities  geojson data
+			var emergency = L.geoJson(emergency, {
+				pointToLayer: function(feature, latlng) {
+				return  L.marker(latlng, {icon:myIconEmerg, title: "Emergency Service"});
+			},
+			onEachFeature: function(feature, marker) { // Creating popups and which properties to display in popups
+				marker.bindPopup("<b>Name:</b> " +feature.properties.name + "<br>" + "<b>Category: </b> "  + feature.properties.healthcare +  "<br>" + " <b>Opening hours: </b> " + feature.properties.opening_ho );
+			}
+			});
+
+
+			// Create Basemap layers 	
+			var Thunderforest = L.tileLayer('https://{s}.tile.thunderforest.com/mobile-atlas/{z}/{x}/{y}.png?apikey={apikey}', {
+			attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			apikey: '8d225302dee6496eb35bcf38a54f69a1',
+			maxZoom: 22,
+			minZoom: 12
+			}),
+			
+			WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+			maxZoom: 19,
+			minZoom: 12
+			}),
+			Toner = L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png',{
+			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>',
+			maxZoom: 22,
+			minZoom: 12
+			 });
+			
+			// Basemaps layer options 
+			var baseLayers = {
+			"Thunderforest": Thunderforest,
+			"Esri TopoMap": WorldTopoMap,
+			"Stamen Toner": Toner
+			};
+
+			$(document).ready(function() { // $(document).ready ensures that page is fully loaded before script executes
+            // map center is set along with inital basemap option
+			map = L.map('map', {zoomControl: false}).addLayer(Thunderforest).setView([47.81, 13.03], 13);
+			// Return to home location is set through var zoomHome and added to the map
+			var zoomHome = L.Control.zoomHome();
+            zoomHome.addTo(map);
+
+			/*The clusters created from the doctors geojson data is added to the the map as  a layer
+			the data for pharmacy locations and emergency facilites are also added as laeyrs to the map 
+			The extents of the map are set using the bounds of the pharmacy features */
+			map.addLayer(clusters);
+			map.addLayer(pharmacy);
+			map.addLayer(emergency);
+			map.fitBounds(pharmacy.getBounds());
+			
+			// Metric Scale element is added to the map. 
+			L.control.scale().addTo(map);
+
+			// Basemap control is added to the map, by default to the right corner unless specified otherwise
+			L.control.layers(baseLayers).addTo(map);
+
+			/* The legend variable is defined, legend elements specified along with the correct path to labels for the elements. 
+			Behaviour of the legend such as position, number of columns is specifed too.
+			The legend is then added to the map*/				
+			var Legend = L.control.Legend({
+            position: "bottomright",
+            collapsed: false,
+            symbolWidth: 24,
+            opacity: 1,
+            column: 1,
+            legends: [{
+            label: "Doctors",
+            type: "image",
+            url: "images/doctor.png",
+           	}, {
+            label: "Pharmacy",
+            type: "image",
+            url: "images/pharmacy.png"
+            },
+			{
+            label: "Emergency",
+            type: "image",
+            url: "images/emergency.png"
+           	}
+			]
+       		}).addTo(map);
+
+			});
+			/* The functionalities of the map such as zoom to Home, scale, legend and clsutering are implemented using leaflet plugins 
+			whose paths have been defined in the css and js tags at the top of the html document*/	
+
+        </script>
+    </body>
+</html>
+
